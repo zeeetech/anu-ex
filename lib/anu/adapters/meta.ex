@@ -124,7 +124,7 @@ defmodule Anu.Adapters.Meta do
             buttons
             |> Enum.with_index()
             |> Enum.map(fn {{title, id}, index} ->
-              %{type: "reply", reply: %{id: id || "btn_#{index}", title: title}}
+              %{type: "reply", reply: %{id: to_string(id || "btn_#{index}"), title: title}}
             end)
         }
       }

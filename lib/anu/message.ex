@@ -39,7 +39,7 @@ defmodule Anu.Message do
           body: String.t() | nil,
           header: map() | nil,
           footer: String.t() | nil,
-          buttons: [{String.t(), String.t()}] | nil,
+          buttons: [{String.t(), String.t() | atom()}] | nil,
           sections: [Anu.Section.t()] | nil,
           button_text: String.t() | nil,
           template: map() | nil,
@@ -182,8 +182,11 @@ defmodule Anu.Message do
       iex> Anu.Message.new("+55") |> Anu.Message.buttons([{"Yes", "yes"}, {"No", "no"}])
       %Anu.Message{to: "+55", buttons: [{"Yes", "yes"}, {"No", "no"}]}
 
+      iex> Anu.Message.new("+55") |> Anu.Message.buttons([{"Track", :track}, {"Cancel", :cancel}])
+      %Anu.Message{to: "+55", buttons: [{"Track", :track}, {"Cancel", :cancel}]}
+
   """
-  @spec buttons(t(), [{String.t(), String.t()}]) :: t()
+  @spec buttons(t(), [{String.t(), String.t() | atom()}]) :: t()
   def buttons(%__MODULE__{} = message, buttons) when is_list(buttons) do
     %{message | buttons: buttons}
   end

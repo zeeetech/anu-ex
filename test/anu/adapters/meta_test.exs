@@ -54,6 +54,19 @@ defmodule Anu.Adapters.MetaTest do
       assert Enum.at(buttons, 0).reply.id == "yes"
     end
 
+    test "serializes atom button payloads as strings" do
+      payload =
+        "+55"
+        |> Message.new()
+        |> Message.text("Choose")
+        |> Message.buttons([{"Track", :track_order}, {"Cancel", :cancel}])
+        |> Meta.serialize()
+
+      buttons = payload.interactive.action.buttons
+      assert Enum.at(buttons, 0).reply.id == "track_order"
+      assert Enum.at(buttons, 1).reply.id == "cancel"
+    end
+
     test "includes header and footer when set" do
       payload =
         "+55"
