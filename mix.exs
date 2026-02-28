@@ -38,8 +38,8 @@ defmodule Anu.MixProject do
       {:finch, "~> 0.19"},
       {:plug, "~> 1.16"},
       {:mox, "~> 1.2", only: :test},
-      {:styler, "~> 1.11", only: :dev},
       {:ex_doc, "~> 0.35", only: :dev, runtime: false},
+      {:styler, "~> 1.11", only: [:dev, :test], runtime: false},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false}
     ]
