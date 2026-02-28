@@ -154,7 +154,7 @@ defmodule MyApp.WhatsAppHandler do
   def handle_event(:message_received, %Anu.Event.Message{} = msg) do
     msg.from
     |> Anu.Message.new()
-    |> Anu.Message.react("👍")
+    |> Anu.Message.react("👍", message_id: msg.id)
     |> Anu.deliver()
   end
 
@@ -189,12 +189,12 @@ config :anu, adapter: Anu.Adapters.Test
 In tests:
 
 ```elixir
-use Anu.TestAssertions
+import Anu.TestAssertions
 
 test "sends order confirmation" do
   MyApp.send_confirmation(order)
 
-  assert_message_sent %{to: order.customer_phone, text: ~r/shipped/}
+  assert_message_sent(to: order.customer_phone, body: "Your order has shipped!")
 end
 ```
 
