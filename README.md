@@ -73,6 +73,77 @@ children = [
 config :anu, finch: MyApp.Finch
 ```
 
+## Cloud features (`Anu.AI`)
+
+Anu ships with optional AI primitives backed by [anu_cloud](https://anu.zeetech.io) — a hosted backend that proxies to Anthropic's Claude models, tracks usage, and bills per call. You don't need to manage your own LLM provider.
+
+### Setup
+
+1. **Get an API key**
+
+   Sign up at [anu.zeetech.io](https://anu.zeetech.io). Pick a plan (Cloud — $9/mo, or Scale — $39/mo), complete checkout, and grab your `anu_sk_...` key from the welcome email.
+
+2. **Configure**
+
+   ```elixir
+   # config/runtime.exs
+   config :anu, cloud_api_key: System.fetch_env!("ANU_API_KEY")
+   ```
+
+   Optional — only set if you're pointing at a self-hosted or staging cloud:
+
+   ```elixir
+   config :anu, cloud_url: "https://api.anu.zeetech.io"  # default
+   ```
+
+3. **Use it** — `Anu.AI.classify/2`, `Anu.AI.extract/2`, `Anu.AI.reply/2`, `Anu.AI.summarize/1`. All return `{:ok, decoded_map}` (string keys) or `{:error, %Anu.Error{} | :cloud_not_configured}`.
+
+### What you get
+
+| Plan | Included | Light overage | Heavy overage |
+|---|---|---|---|
+| Cloud — $9/mo | 500 light + 100 heavy | $0.002/call | $0.015/call |
+| Scale — $39/mo | 5,000 light + 1,000 heavy | $0.002/call | $0.015/call |
+
+Light calls = `classify` + `extract` (Haiku). Heavy calls = `reply` + `summarize` (Sonnet). Requests above quota are not blocked — they accrue as metered overage and are billed at month end.
+
+### The four primitives
+
+```elixir
+# Intent classification (light call — Haiku)
+{:ok, %{"intent" => "support", "confidence" => 0.93}} =
+  Anu.AI.classify("my order is late", intents: ["support", "sales", "spam"])
+
+# Structured extraction (light call — Haiku)
+{:ok, %{"data" => %{"name" => "Ana", "order_id" => "123"}}} =
+  Anu.AI.extract("I'm Ana, order 123", schema: %{name: "string", order_id: "string"})
+
+# Drafted reply (heavy call — Sonnet)
+{:ok, %{"reply" => text}} =
+  Anu.AI.reply("when does my package arrive?", tone: "warm")
+
+# Conversation summarization (heavy call — Sonnet)
+{:ok, %{"summary" => summary}} =
+  Anu.AI.summarize([%{from: "user", text: "hi"}, %{from: "us", text: "hello"}])
+```
+
+End-to-end: classify an inbound message, draft a reply, and ship it via WhatsApp in one flow.
+
+```elixir
+def handle_event(:message, %{from: from, text: text}) do
+  with {:ok, %{"intent" => intent}} <-
+         Anu.AI.classify(text, intents: ["support", "sales", "spam"]),
+       {:ok, %{"reply" => reply}} <- Anu.AI.reply(text, context: intent, tone: "warm") do
+    from
+    |> Anu.Message.new()
+    |> Anu.Message.text(reply)
+    |> Anu.deliver()
+  end
+end
+```
+
+All `Anu.AI.*` functions return `{:ok, decoded_map}` (string keys) or `{:error, %Anu.Error{} | :cloud_not_configured}`. See [`Anu.AI`](https://hexdocs.pm/anu/Anu.AI.html) for the full reference.
+
 ## Usage
 
 ### Composing messages

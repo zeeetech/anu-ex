@@ -24,3 +24,6 @@ anu-*.tar
 
 # Expert LSP
 /.expert/
+
+/.claude/
+.DS_Store

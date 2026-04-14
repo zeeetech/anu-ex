@@ -21,7 +21,8 @@ defmodule Anu.Application do
         {Finch,
          name: Anu.Finch,
          pools: %{
-           "https://graph.facebook.com" => pool_opts
+           "https://graph.facebook.com" => pool_opts,
+           Anu.Config.cloud_url() => [size: 10, count: 2]
          }}
       ]
     end

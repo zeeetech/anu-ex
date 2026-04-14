@@ -129,4 +129,32 @@ defmodule Anu.Config do
   def custom_finch? do
     Application.get_env(:anu, :finch) != nil
   end
+
+  @doc """
+  Returns the base URL for the anu_cloud backend.
+
+  Defaults to `"https://api.anu.zeetech.io"`. Override with:
+
+      config :anu, :cloud_url, "https://api.anu.zeetech.io"
+  """
+  @spec cloud_url() :: String.t()
+  def cloud_url do
+    Application.get_env(:anu, :cloud_url, "https://api.anu.zeetech.io")
+  end
+
+  @doc """
+  Returns the configured anu_cloud API key, or `nil` when not set.
+  """
+  @spec cloud_api_key() :: String.t() | nil
+  def cloud_api_key do
+    Application.get_env(:anu, :cloud_api_key)
+  end
+
+  @doc """
+  Returns `true` when an anu_cloud API key is configured.
+  """
+  @spec cloud_configured?() :: boolean()
+  def cloud_configured? do
+    is_binary(cloud_api_key()) and cloud_api_key() != ""
+  end
 end

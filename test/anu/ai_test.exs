@@ -1,0 +1,90 @@
+defmodule Anu.AITest do
+  use ExUnit.Case, async: true
+
+  import Mox
+
+  alias Anu.Cloud.ClientMock
+
+  setup :verify_on_exit!
+
+  describe "classify/2" do
+    test "POSTs to /v1/ai/classify with text + intents" do
+      expect(ClientMock, :post, fn "/v1/ai/classify", body ->
+        assert body == %{text: "hi", intents: ["greet", "other"]}
+        {:ok, %{"intent" => "greet", "confidence" => 0.99}}
+      end)
+
+      assert {:ok, %{"intent" => "greet"}} =
+               Anu.AI.classify("hi", intents: ["greet", "other"])
+    end
+
+    test "raises when :intents is missing" do
+      assert_raise KeyError, fn -> Anu.AI.classify("hi", []) end
+    end
+  end
+
+  describe "extract/2" do
+    test "POSTs to /v1/ai/extract with text + schema" do
+      schema = %{name: "string"}
+
+      expect(ClientMock, :post, fn "/v1/ai/extract", body ->
+        assert body == %{text: "I'm Ana", schema: schema}
+        {:ok, %{"data" => %{"name" => "Ana"}}}
+      end)
+
+      assert {:ok, %{"data" => %{"name" => "Ana"}}} =
+               Anu.AI.extract("I'm Ana", schema: schema)
+    end
+  end
+
+  describe "reply/2" do
+    test "omits optional context/tone when not given" do
+      expect(ClientMock, :post, fn "/v1/ai/reply", body ->
+        assert body == %{text: "hello"}
+        {:ok, %{"reply" => "Hi there!"}}
+      end)
+
+      assert {:ok, %{"reply" => "Hi there!"}} = Anu.AI.reply("hello")
+    end
+
+    test "forwards context + tone when set" do
+      expect(ClientMock, :post, fn "/v1/ai/reply", body ->
+        assert body.text == "hello"
+        assert body.context == "vip customer"
+        assert body.tone == "warm"
+        {:ok, %{"reply" => "Hi VIP!"}}
+      end)
+
+      assert {:ok, _} = Anu.AI.reply("hello", context: "vip customer", tone: "warm")
+    end
+  end
+
+  describe "summarize/1" do
+    test "POSTs to /v1/ai/summarize with messages" do
+      msgs = [%{from: "user", text: "hi"}]
+
+      expect(ClientMock, :post, fn "/v1/ai/summarize", body ->
+        assert body == %{messages: msgs}
+        {:ok, %{"summary" => "user said hi"}}
+      end)
+
+      assert {:ok, %{"summary" => "user said hi"}} = Anu.AI.summarize(msgs)
+    end
+  end
+
+  describe "error propagation" do
+    test "propagates :cloud_not_configured" do
+      expect(ClientMock, :post, fn _, _ -> {:error, :cloud_not_configured} end)
+
+      assert {:error, :cloud_not_configured} = Anu.AI.reply("hi")
+    end
+
+    test "propagates Anu.Error{}" do
+      err = %Anu.Error{code: 401, message: "invalid_api_key"}
+
+      expect(ClientMock, :post, fn _, _ -> {:error, err} end)
+
+      assert {:error, ^err} = Anu.AI.classify("x", intents: ["a"])
+    end
+  end
+end

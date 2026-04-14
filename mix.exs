@@ -62,7 +62,7 @@ defmodule Anu.MixProject do
   defp docs do
     [
       main: "readme",
-      extras: ["README.md", "CONTRIBUTING.md"],
+      extras: ["README.md", "CONTRIBUTING.md", "LICENSE"],
       source_ref: "v#{@version}"
     ]
   end
