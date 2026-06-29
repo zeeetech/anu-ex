@@ -104,8 +104,8 @@ defmodule Anu.AI do
   ## Examples
 
       Anu.AI.summarize([
-        %{from: "+55...", text: "hi"},
-        %{from: "us", text: "hello, how can I help?"}
+        %{role: "user", content: "hi"},
+        %{role: "assistant", content: "hello, how can I help?"}
       ])
       #=> {:ok, %{"summary" => "User said hi; we offered help."}}
   """

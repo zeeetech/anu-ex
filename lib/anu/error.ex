@@ -39,7 +39,7 @@ defmodule Anu.Error do
     %__MODULE__{
       code: error["code"],
       message: error["message"],
-      details: error["error_data"],
+      details: error["details"] || error["error_data"],
       raw: raw
     }
   end
