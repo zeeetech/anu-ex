@@ -6,7 +6,7 @@
 
 Composable Elixir SDK for the WhatsApp Business API.
 
-Anu is an open core platform for building on WhatsApp. This repo contains the Elixir SDK — the first official client. TypeScript, Python, and Go SDKs are coming.
+Anu is an open core platform for building on WhatsApp. This repo contains the Elixir SDK — the first official client. A [TypeScript SDK](https://github.com/zeeetech/anu-ts) is also available. Python and Go SDKs are coming.
 
 **[Docs](https://anu.zeetech.io/docs)** · **[Landing page](https://anu.zeetech.io)** · **[Cloud](https://anu.zeetech.io/#pricing)**
 
@@ -100,12 +100,12 @@ Anu ships with optional AI primitives backed by [anu_cloud](https://anu.zeetech.
 
 ### What you get
 
-| Plan | Included | Light overage | Heavy overage |
-|---|---|---|---|
-| Cloud — $9/mo | 500 light + 100 heavy | $0.002/call | $0.015/call |
-| Scale — $39/mo | 5,000 light + 1,000 heavy | $0.002/call | $0.015/call |
+| Plan | Included |
+|---|---|
+| Cloud — $9/mo | 1,000 light + 200 heavy |
+| Scale — $39/mo | 10,000 light + 2,000 heavy |
 
-Light calls = `classify` + `extract` (Haiku). Heavy calls = `reply` + `summarize` (Sonnet). Requests above quota are not blocked — they accrue as metered overage and are billed at month end.
+Light calls = `classify` + `extract` (Haiku). Heavy calls = `reply` + `summarize` (Sonnet). Requests above quota are blocked until the next billing period.
 
 ### The four primitives
 
@@ -323,7 +323,7 @@ This is the Elixir SDK. Other official SDKs are in development:
 | SDK | Status | Repo |
 |-----|--------|------|
 | Elixir | Available | [zoedsoupe/anu](https://github.com/zeeetech/anu_ex) |
-| TypeScript | Coming soon | — |
+| TypeScript | Available | [zeeetech/anu-ts](https://github.com/zeeetech/anu-ts) |
 | Python | Coming soon | — |
 | Go | Coming soon | — |
 
