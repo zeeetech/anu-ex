@@ -6,25 +6,39 @@ defmodule Anu do
 
   ## Quick start
 
+  Delivery always goes through an explicit `%Anu.Client{}` holding the
+  credentials for one WhatsApp phone number, plus the name of a Finch
+  instance started in your own supervision tree:
+
+      client =
+        Anu.Client.new(
+          finch: MyApp.Finch,
+          access_token: "your_whatsapp_token",
+          phone_number_id: "your_phone_number_id"
+        )
+
       Anu.Message.new("+5511999999999")
       |> Anu.Message.text("Hello from Anu!")
-      |> Anu.deliver()
+      |> Anu.deliver(client)
 
-  ## Configuration
+  ## Multiple numbers / WABAs
 
-      config :anu,
-        access_token: "your_whatsapp_token",
-        phone_number_id: "your_phone_number_id",
-        verify_token: "your_webhook_verify_token",
-        app_secret: "your_app_secret"
+  Build one client per phone number (or per WABA, when you hold several
+  access tokens) and deliver through the matching one:
 
-  See `Anu.Config` for all configuration options.
+      support = Anu.Client.new(finch: MyApp.Finch, access_token: "EAAG...", phone_number_id: "111")
+      sales   = Anu.Client.new(finch: MyApp.Finch, access_token: "EAAG...", phone_number_id: "222")
+
+      Anu.Message.new("+5511999999999")
+      |> Anu.Message.text("Hello from support!")
+      |> Anu.deliver(support)
+
+  See `Anu.Client` for all client options and `Anu.Webhook.Plug` for
+  webhook configuration.
   """
 
-  alias Anu.Config
-
   @doc """
-  Delivers a message through the configured adapter.
+  Delivers a message through the client's adapter.
 
   Returns `{:ok, %Anu.Response{}}` on success or `{:error, %Anu.Error{}}` on failure.
 
@@ -33,16 +47,15 @@ defmodule Anu do
       {:ok, response} =
         Anu.Message.new("+5511999999999")
         |> Anu.Message.text("Hello!")
-        |> Anu.deliver()
+        |> Anu.deliver(client)
 
       response.id
       #=> "wamid.HBgN..."
 
   """
-  @spec deliver(Anu.Message.t()) :: {:ok, Anu.Response.t()} | {:error, Anu.Error.t()}
-  def deliver(%Anu.Message{} = message) do
-    adapter = Config.adapter()
-    adapter.deliver(message, Config.finch_name())
+  @spec deliver(Anu.Message.t(), Anu.Client.t()) :: {:ok, Anu.Response.t()} | {:error, Anu.Error.t()}
+  def deliver(%Anu.Message{} = message, %Anu.Client{} = client) do
+    client.adapter.deliver(message, client)
   end
 
   @doc """
@@ -56,12 +69,12 @@ defmodule Anu do
       response =
         Anu.Message.new("+5511999999999")
         |> Anu.Message.text("Hello!")
-        |> Anu.deliver!()
+        |> Anu.deliver!(client)
 
   """
-  @spec deliver!(Anu.Message.t()) :: Anu.Response.t()
-  def deliver!(%Anu.Message{} = message) do
-    case deliver(message) do
+  @spec deliver!(Anu.Message.t(), Anu.Client.t()) :: Anu.Response.t()
+  def deliver!(%Anu.Message{} = message, %Anu.Client{} = client) do
+    case deliver(message, client) do
       {:ok, response} ->
         response
 

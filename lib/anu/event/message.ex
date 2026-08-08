@@ -18,6 +18,8 @@ defmodule Anu.Event.Message do
     * `:contacts` - contacts list
     * `:button_reply` - button reply payload (for interactive button responses)
     * `:list_reply` - list reply payload (for interactive list responses)
+    * `:phone_number_id` - the receiving phone number ID (from payload metadata)
+    * `:display_phone_number` - the receiving display phone number (from payload metadata)
     * `:raw` - the raw message map from Meta's webhook payload
 
   """
@@ -37,6 +39,8 @@ defmodule Anu.Event.Message do
           contacts: [map()] | nil,
           button_reply: map() | nil,
           list_reply: map() | nil,
+          phone_number_id: String.t() | nil,
+          display_phone_number: String.t() | nil,
           raw: map()
         }
 
@@ -55,6 +59,8 @@ defmodule Anu.Event.Message do
     :contacts,
     :button_reply,
     :list_reply,
+    :phone_number_id,
+    :display_phone_number,
     :raw
   ]
 end

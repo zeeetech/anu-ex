@@ -4,20 +4,20 @@ defmodule Anu.Message do
 
   `Anu.Message` is a plain struct that accumulates state as you pipe through
   builder functions. The struct is only serialized to the Meta API format when
-  `Anu.deliver/1` is called.
+  `Anu.deliver/2` is called.
 
   ## Examples
 
       # Simple text message
       Anu.Message.new("+5511999999999")
       |> Anu.Message.text("Hello!")
-      |> Anu.deliver()
+      |> Anu.deliver(client)
 
       # Interactive message with buttons
       Anu.Message.new("+5511999999999")
       |> Anu.Message.text("Pick a color")
       |> Anu.Message.buttons([{"Red", "red"}, {"Blue", "blue"}])
-      |> Anu.deliver()
+      |> Anu.deliver(client)
 
       # List message with sections
       Anu.Message.new("+5511999999999")
@@ -29,7 +29,7 @@ defmodule Anu.Message do
           Anu.Row.new("tea", "Tea")
         ])
       ])
-      |> Anu.deliver()
+      |> Anu.deliver(client)
 
   """
 

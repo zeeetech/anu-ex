@@ -4,9 +4,13 @@ defmodule Anu.Adapters.Local do
 
   Useful for local development when you don't want to hit the Meta API.
 
-  ## Configuration
+  ## Usage
 
-      config :anu, adapter: Anu.Adapters.Local
+      client = Anu.Client.new(adapter: Anu.Adapters.Local, finch: MyApp.Finch)
+
+      Anu.Message.new("+5511999999999")
+      |> Anu.Message.text("Hello!")
+      |> Anu.deliver(client)
 
   """
 
@@ -18,7 +22,7 @@ defmodule Anu.Adapters.Local do
   require Logger
 
   @impl true
-  def deliver(%Message{} = message, _finch_name) do
+  def deliver(%Message{} = message, %Anu.Client{}) do
     Logger.info("""
     [Anu.Local] Message to #{message.to}
       type: #{infer_type(message)}

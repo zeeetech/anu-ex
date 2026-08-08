@@ -25,6 +25,10 @@ defmodule Anu.Webhook.Plug do
 
     * `:handler` (required) — a module implementing `Anu.Webhook.Handler`
     * `:secret` — app secret for signature verification; falls back to `Anu.Config.app_secret/0`
+    * `:verify_token` — token for the GET verification challenge; falls back to `Anu.Config.verify_token/0`
+
+  Multi-app setups (several WABAs in one node) can mount one `forward` per
+  app, each with its own `:secret` and `:verify_token`.
 
   """
 
@@ -38,16 +42,22 @@ defmodule Anu.Webhook.Plug do
   @impl true
   def init(opts) do
     handler = Keyword.fetch!(opts, :handler)
-    %{handler: handler, secret: Keyword.get(opts, :secret)}
+
+    %{
+      handler: handler,
+      secret: Keyword.get(opts, :secret),
+      verify_token: Keyword.get(opts, :verify_token)
+    }
   end
 
   @impl true
-  def call(%Plug.Conn{method: "GET"} = conn, _opts) do
+  def call(%Plug.Conn{method: "GET"} = conn, opts) do
     params = fetch_query_params(conn).query_params
+    verify_token = opts.verify_token || Anu.Config.verify_token()
 
     with token when is_binary(token) <- params["hub.verify_token"],
          challenge when is_binary(challenge) <- params["hub.challenge"],
-         true <- Plug.Crypto.secure_compare(token, Anu.Config.verify_token()) do
+         true <- Plug.Crypto.secure_compare(token, verify_token) do
       conn
       |> put_resp_content_type("text/plain")
       |> send_resp(200, challenge)

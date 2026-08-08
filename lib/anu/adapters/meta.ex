@@ -3,36 +3,49 @@ defmodule Anu.Adapters.Meta do
   Production adapter that sends messages via the Meta WhatsApp Cloud API.
 
   Uses Finch for HTTP and the native `JSON` module for encoding.
-  All configuration is read through `Anu.Config`.
+  Credentials, API version and Finch instance are read from the
+  `%Anu.Client{}` passed to `deliver/2`.
   """
 
   @behaviour Anu.Adapter
 
-  alias Anu.Config
+  alias Anu.Client
   alias Anu.Error
   alias Anu.Message
   alias Anu.Response
 
   @impl true
-  def deliver(%Message{} = message, finch_name) do
-    url = build_url()
+  def deliver(%Message{} = message, %Client{} = client) do
+    url = build_url(client)
     body = message |> serialize() |> JSON.encode!()
 
     :post
-    |> Finch.build(url, headers(), body)
-    |> Finch.request(finch_name)
+    |> Finch.build(url, headers(client), body)
+    |> Finch.request(client.finch)
     |> handle_response()
   end
 
-  defp build_url do
-    "https://graph.facebook.com/#{Config.api_version()}/#{Config.phone_number_id()}/messages"
+  defp build_url(%Client{} = client) do
+    "https://graph.facebook.com/#{client.api_version}/#{phone_number_id!(client)}/messages"
   end
 
-  defp headers do
+  defp headers(%Client{} = client) do
     [
-      {"authorization", "Bearer #{Config.access_token()}"},
+      {"authorization", "Bearer #{access_token!(client)}"},
       {"content-type", "application/json"}
     ]
+  end
+
+  defp phone_number_id!(%Client{phone_number_id: id}) when is_binary(id), do: id
+
+  defp phone_number_id!(%Client{}) do
+    raise ArgumentError, "Anu.Adapters.Meta requires client.phone_number_id to be set"
+  end
+
+  defp access_token!(%Client{access_token: token}) when is_binary(token), do: token
+
+  defp access_token!(%Client{}) do
+    raise ArgumentError, "Anu.Adapters.Meta requires client.access_token to be set"
   end
 
   defp handle_response({:ok, %Finch.Response{status: status, body: body}}) when status in 200..299 do

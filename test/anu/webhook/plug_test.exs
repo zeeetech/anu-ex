@@ -40,6 +40,29 @@ defmodule Anu.Webhook.PlugTest do
 
       assert conn.status == 403
     end
+
+    test "uses the :verify_token init opt over the configured token" do
+      opts = WebhookPlug.init(handler: TestHandler, secret: @secret, verify_token: "app_two_token")
+
+      conn =
+        :get
+        |> Plug.Test.conn("/webhook?hub.mode=subscribe&hub.verify_token=app_two_token&hub.challenge=challenge_456")
+        |> WebhookPlug.call(opts)
+
+      assert conn.status == 200
+      assert conn.resp_body == "challenge_456"
+    end
+
+    test "rejects the configured token when a :verify_token opt is given" do
+      opts = WebhookPlug.init(handler: TestHandler, secret: @secret, verify_token: "app_two_token")
+
+      conn =
+        :get
+        |> Plug.Test.conn("/webhook?hub.mode=subscribe&hub.verify_token=test_verify_token&hub.challenge=test")
+        |> WebhookPlug.call(opts)
+
+      assert conn.status == 403
+    end
   end
 
   describe "POST — webhook events" do

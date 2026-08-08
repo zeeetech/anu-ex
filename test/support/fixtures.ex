@@ -41,6 +41,10 @@ defmodule Anu.Fixtures do
             %{
               "value" => %{
                 "messaging_product" => "whatsapp",
+                "metadata" => %{
+                  "display_phone_number" => "5511999999999",
+                  "phone_number_id" => "PHONE_NUMBER_ID"
+                },
                 "statuses" => [
                   %{
                     "id" => "wamid.HBgNNTUxMTk5OTk5OTk5OQ==",

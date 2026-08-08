@@ -6,25 +6,27 @@ defmodule Anu.AI do
   conversation text without managing your own LLM provider. Pair them with
   `Anu.Message` to build conversational flows in a few lines.
 
-  ## Configuration
+  ## Client
 
-      config :anu,
-        cloud_api_key: System.fetch_env!("ANU_API_KEY")
+  Every function takes an `%Anu.Client{}` as its last argument. The client
+  carries the cloud API key, cloud URL and Finch instance:
 
-  Optional:
-
-      config :anu, :cloud_url, "https://api.anu.zeetech.io"  # default
+      client =
+        Anu.Client.new(
+          finch: MyApp.Finch,
+          cloud_api_key: System.fetch_env!("ANU_API_KEY")
+        )
 
   ## Example
 
       with {:ok, %{"intent" => "support"}} <-
-             Anu.AI.classify(text, intents: ["support", "sales", "spam"]),
+             Anu.AI.classify(text, [intents: ["support", "sales", "spam"]], client),
            {:ok, %{"reply" => reply}} <-
-             Anu.AI.reply(text, tone: "warm") do
+             Anu.AI.reply(text, [tone: "warm"], client) do
         from
         |> Anu.Message.new()
         |> Anu.Message.text(reply)
-        |> Anu.deliver()
+        |> Anu.deliver(client)
       end
 
   All functions return `{:ok, decoded_map}` or `{:error, %Anu.Error{} | :cloud_not_configured}`.
@@ -44,15 +46,13 @@ defmodule Anu.AI do
 
   ## Examples
 
-      Anu.AI.classify("I need to reset my password",
-        intents: ["support", "sales", "spam"]
-      )
+      Anu.AI.classify("I need to reset my password", [intents: ["support", "sales", "spam"]], client)
       #=> {:ok, %{"intent" => "support", "confidence" => 0.93}}
   """
-  @spec classify(String.t(), keyword()) :: result()
-  def classify(text, opts) when is_binary(text) and is_list(opts) do
+  @spec classify(String.t(), keyword(), Anu.Client.t()) :: result()
+  def classify(text, opts, %Anu.Client{} = client) when is_binary(text) and is_list(opts) do
     intents = Keyword.fetch!(opts, :intents)
-    client().post("/v1/ai/classify", %{text: text, intents: intents})
+    cloud_client().post(client, "/v1/ai/classify", %{text: text, intents: intents})
   end
 
   @doc """
@@ -64,15 +64,13 @@ defmodule Anu.AI do
 
   ## Examples
 
-      Anu.AI.extract("My name is Ana and my order is #123",
-        schema: %{name: "string", order_id: "string"}
-      )
+      Anu.AI.extract("My name is Ana and my order is #123", [schema: %{name: "string", order_id: "string"}], client)
       #=> {:ok, %{"data" => %{"name" => "Ana", "order_id" => "123"}}}
   """
-  @spec extract(String.t(), keyword()) :: result()
-  def extract(text, opts) when is_binary(text) and is_list(opts) do
+  @spec extract(String.t(), keyword(), Anu.Client.t()) :: result()
+  def extract(text, opts, %Anu.Client{} = client) when is_binary(text) and is_list(opts) do
     schema = Keyword.fetch!(opts, :schema)
-    client().post("/v1/ai/extract", %{text: text, schema: schema})
+    cloud_client().post(client, "/v1/ai/extract", %{text: text, schema: schema})
   end
 
   @doc """
@@ -85,17 +83,17 @@ defmodule Anu.AI do
 
   ## Examples
 
-      Anu.AI.reply("when does my package arrive?", tone: "warm")
+      Anu.AI.reply("when does my package arrive?", [tone: "warm"], client)
       #=> {:ok, %{"reply" => "Hi! Your package is on its way..."}}
   """
-  @spec reply(String.t(), keyword()) :: result()
-  def reply(text, opts \\ []) when is_binary(text) and is_list(opts) do
+  @spec reply(String.t(), keyword(), Anu.Client.t()) :: result()
+  def reply(text, opts \\ [], %Anu.Client{} = client) when is_binary(text) and is_list(opts) do
     body =
       %{text: text}
       |> maybe_put(:context, opts[:context])
       |> maybe_put(:tone, opts[:tone])
 
-    client().post("/v1/ai/reply", body)
+    cloud_client().post(client, "/v1/ai/reply", body)
   end
 
   @doc """
@@ -106,15 +104,15 @@ defmodule Anu.AI do
       Anu.AI.summarize([
         %{role: "user", content: "hi"},
         %{role: "assistant", content: "hello, how can I help?"}
-      ])
+      ], client)
       #=> {:ok, %{"summary" => "User said hi; we offered help."}}
   """
-  @spec summarize([map()]) :: result()
-  def summarize(messages) when is_list(messages) do
-    client().post("/v1/ai/summarize", %{messages: messages})
+  @spec summarize([map()], Anu.Client.t()) :: result()
+  def summarize(messages, %Anu.Client{} = client) when is_list(messages) do
+    cloud_client().post(client, "/v1/ai/summarize", %{messages: messages})
   end
 
-  defp client, do: Application.get_env(:anu, :cloud_client, Anu.Cloud.Client)
+  defp cloud_client, do: Application.get_env(:anu, :cloud_client, Anu.Cloud.Client)
 
   defp maybe_put(map, _k, nil), do: map
   defp maybe_put(map, k, v), do: Map.put(map, k, v)

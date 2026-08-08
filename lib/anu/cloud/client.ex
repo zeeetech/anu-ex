@@ -8,38 +8,43 @@ defmodule Anu.Cloud.Client do
   #     config :anu, :cloud_client, MyMock
   #
   # The bound module must implement the `Anu.Cloud.Client` behaviour below.
+  # The `%Anu.Client{}` is passed as the first argument to every callback.
 
   @behaviour Anu.Cloud.Client
 
-  alias Anu.Config
+  alias Anu.Client
   alias Anu.Error
 
   @type result :: {:ok, map()} | {:error, Error.t() | :cloud_not_configured}
 
-  @callback post(path :: String.t(), body :: map()) :: result()
+  @callback post(Client.t(), path :: String.t(), body :: map()) :: result()
 
   @impl true
-  def post(path, body) when is_binary(path) and is_map(body) do
-    if Config.cloud_configured?() do
-      do_post(path, body)
+  def post(%Client{} = client, path, body) when is_binary(path) and is_map(body) do
+    if configured?(client) do
+      do_post(client, path, body)
     else
       {:error, :cloud_not_configured}
     end
   end
 
-  defp do_post(path, body) do
-    url = Config.cloud_url() <> path
+  defp configured?(%Client{cloud_api_key: key}) do
+    is_binary(key) and key != ""
+  end
+
+  defp do_post(%Client{} = client, path, body) do
+    url = client.cloud_url <> path
     payload = JSON.encode!(body)
 
     :post
-    |> Finch.build(url, headers(), payload)
-    |> Finch.request(Config.finch_name())
+    |> Finch.build(url, headers(client), payload)
+    |> Finch.request(client.finch)
     |> handle_response()
   end
 
-  defp headers do
+  defp headers(%Client{} = client) do
     [
-      {"authorization", "Bearer " <> Config.cloud_api_key()},
+      {"authorization", "Bearer " <> client.cloud_api_key},
       {"content-type", "application/json"},
       {"user-agent", user_agent()}
     ]

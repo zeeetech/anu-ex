@@ -38,22 +38,23 @@ defmodule Anu.Webhook.Parser do
   def parse(_), do: []
 
   defp parse_change(%{"value" => value}) do
-    messages = parse_messages(Map.get(value, "messages", []))
-    statuses = parse_statuses(Map.get(value, "statuses", []))
+    metadata = value["metadata"] || %{}
+    messages = parse_messages(Map.get(value, "messages", []), metadata)
+    statuses = parse_statuses(Map.get(value, "statuses", []), metadata)
     messages ++ statuses
   end
 
   defp parse_change(_), do: []
 
-  defp parse_messages(messages) when is_list(messages) do
+  defp parse_messages(messages, metadata) when is_list(messages) do
     Enum.map(messages, fn message ->
-      {:message_received, parse_message(message)}
+      {:message_received, parse_message(message, metadata)}
     end)
   end
 
-  defp parse_messages(_), do: []
+  defp parse_messages(_, _), do: []
 
-  defp parse_message(message) do
+  defp parse_message(message, metadata) do
     %Event.Message{
       id: message["id"],
       from: message["from"],
@@ -69,24 +70,28 @@ defmodule Anu.Webhook.Parser do
       contacts: message["contacts"],
       button_reply: get_in(message, ["interactive", "button_reply"]),
       list_reply: get_in(message, ["interactive", "list_reply"]),
+      phone_number_id: metadata["phone_number_id"],
+      display_phone_number: metadata["display_phone_number"],
       raw: message
     }
   end
 
-  defp parse_statuses(statuses) when is_list(statuses) do
+  defp parse_statuses(statuses, metadata) when is_list(statuses) do
     Enum.map(statuses, fn status ->
-      {:message_status, parse_status(status)}
+      {:message_status, parse_status(status, metadata)}
     end)
   end
 
-  defp parse_statuses(_), do: []
+  defp parse_statuses(_, _), do: []
 
-  defp parse_status(status) do
+  defp parse_status(status, metadata) do
     %Event.Status{
       id: status["id"],
       status: parse_status_value(status["status"]),
       timestamp: status["timestamp"],
       recipient_id: status["recipient_id"],
+      phone_number_id: metadata["phone_number_id"],
+      display_phone_number: metadata["display_phone_number"],
       raw: status
     }
   end

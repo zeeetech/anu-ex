@@ -32,6 +32,20 @@ defmodule Anu.WebhookTest do
       assert event.type == "text"
       assert event.text == "Hello!"
     end
+
+    test "populates phone number fields from metadata" do
+      [{:message_received, event}] = Parser.parse(Fixtures.text_message_payload())
+
+      assert event.phone_number_id == "PHONE_NUMBER_ID"
+      assert event.display_phone_number == "5511999999999"
+    end
+
+    test "leaves phone number fields nil when metadata is absent" do
+      [{:message_received, event}] = Parser.parse(Fixtures.image_message_payload())
+
+      assert event.phone_number_id == nil
+      assert event.display_phone_number == nil
+    end
   end
 
   describe "Parser.parse/1 — status updates" do
@@ -41,6 +55,13 @@ defmodule Anu.WebhookTest do
       assert event.id == "wamid.HBgNNTUxMTk5OTk5OTk5OQ=="
       assert event.status == :delivered
       assert event.recipient_id == "5511999999999"
+    end
+
+    test "populates phone number fields from metadata" do
+      [{:message_status, event}] = Parser.parse(Fixtures.status_update_payload())
+
+      assert event.phone_number_id == "PHONE_NUMBER_ID"
+      assert event.display_phone_number == "5511999999999"
     end
 
     test "parses all status types" do

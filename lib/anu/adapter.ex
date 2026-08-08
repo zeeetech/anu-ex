@@ -16,18 +16,18 @@ defmodule Anu.Adapter do
         @behaviour Anu.Adapter
 
         @impl true
-        def deliver(message, finch_name) do
-          # Your delivery logic here
+        def deliver(message, client) do
+          # Your delivery logic here; HTTP calls go through client.finch
           {:ok, %Anu.Response{id: "custom_123"}}
         end
       end
 
-  Then configure it:
+  Then use it on a client:
 
-      config :anu, adapter: MyApp.CustomAdapter
+      Anu.Client.new(adapter: MyApp.CustomAdapter, finch: MyApp.Finch)
 
   """
 
-  @callback deliver(Anu.Message.t(), Finch.name()) ::
+  @callback deliver(Anu.Message.t(), Anu.Client.t()) ::
               {:ok, Anu.Response.t()} | {:error, Anu.Error.t()}
 end

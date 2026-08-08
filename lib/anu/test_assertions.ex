@@ -2,7 +2,8 @@ defmodule Anu.TestAssertions do
   @moduledoc """
   ExUnit assertion helpers for testing Anu message delivery.
 
-  Requires the test adapter (`Anu.Adapters.Test`) to be configured.
+  Requires delivering through a client built with the test adapter
+  (`Anu.Adapters.Test`).
 
   ## Usage
 
@@ -10,10 +11,14 @@ defmodule Anu.TestAssertions do
         use ExUnit.Case
         import Anu.TestAssertions
 
-        test "sends welcome message" do
+        setup do
+          {:ok, client: Anu.Client.new(adapter: Anu.Adapters.Test, finch: MyApp.Finch)}
+        end
+
+        test "sends welcome message", %{client: client} do
           Anu.Message.new("+5511999999999")
           |> Anu.Message.text("Welcome!")
-          |> Anu.deliver()
+          |> Anu.deliver(client)
 
           assert_message_sent to: "+5511999999999", body: "Welcome!"
         end
