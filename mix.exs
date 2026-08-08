@@ -54,14 +54,14 @@ defmodule Anu.MixProject do
     [
       licenses: ["MIT"],
       links: %{"GitHub" => @source_url},
-      files: ~w(lib .formatter.exs mix.exs README.md LICENSE CONTRIBUTING.md)
+      files: ~w(lib .formatter.exs mix.exs README.md LICENSE)
     ]
   end
 
   defp docs do
     [
       main: "readme",
-      extras: ["README.md", "CONTRIBUTING.md", "LICENSE"],
+      extras: ["README.md", "LICENSE"],
       source_ref: "v#{@version}"
     ]
   end
