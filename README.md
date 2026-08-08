@@ -202,17 +202,6 @@ test "sends order confirmation" do
 end
 ```
 
-## Contributing
-
-Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) before submitting a PR.
-
-```bash
-git clone https://github.com/zeeetech/anu_ex.git
-cd anu
-mix deps.get
-mix test
-```
-
 ---
 
 Built with 💜 by [@zoedsoupe](https://github.com/zoedsoupe)
