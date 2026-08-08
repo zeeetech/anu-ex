@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.2.0](https://github.com/zeeetech/anu-ex/compare/v0.1.0...v0.2.0) (2026-08-08)
+
+
+### Features
+
+* ai cloud classification and workflow ([ca9b295](https://github.com/zeeetech/anu-ex/commit/ca9b2959076c66439bc96ce5fdad326cbaedbee5))
+* explicit Anu.Client for delivery and cloud calls ([b54bcd9](https://github.com/zeeetech/anu-ex/commit/b54bcd9678be7695107766e08af1ecd289fe1759))
+
+
+### Bug Fixes
+
+* align AI summarize message keys and error details with cloud contract ([c7c5b3e](https://github.com/zeeetech/anu-ex/commit/c7c5b3ead195cc969e47dd189a6dc757dca1df8f))
+
+
+### Miscellaneous Chores
+
+* fix readme ([1f6e874](https://github.com/zeeetech/anu-ex/commit/1f6e874ae6ebdf842050bfa5317058ad24be189e))
+* format + readme rewrite ([d924b75](https://github.com/zeeetech/anu-ex/commit/d924b7590106d86639a0e65f08841430a8c690a7))
+* remove contributing ([ba82178](https://github.com/zeeetech/anu-ex/commit/ba821780ce10627c22ae854334da1c12e2078ef0))
+
 ## 0.1.0 (2026-02-28)
 
 ### Features
