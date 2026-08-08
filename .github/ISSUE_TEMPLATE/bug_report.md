@@ -4,7 +4,6 @@ about: Create a report to help us improve
 title: "[BUG]"
 labels: bug
 assignees: zoedsoupe
-
 ---
 
 **Describe the bug**
@@ -17,8 +16,8 @@ Steps to reproduce the behavior
 A clear and concise description of what you expected to happen.
 
 **Environment**
-	•	Elixir version: [e.g., 1.16.0]
-	•	Peri version: [e.g., 0.2.3]
+• Elixir version: [e.g., 1.16.0]
+• Peri version: [e.g., 0.2.3]
 
 **Additional context**
 Add any other context about the problem here.

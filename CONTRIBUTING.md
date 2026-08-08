@@ -71,12 +71,12 @@ Anu follows a few core principles. Please keep these in mind when contributing.
 Every public function should work well in a pipeline. Functions that operate on a message take the message struct as the first argument and return the updated struct.
 
 ```elixir
-# good — pipeable
+# good - pipeable
 Anu.Message.new(to)
 |> Anu.Message.text("hello")
 |> Anu.Message.buttons([{"OK", :ok}])
 
-# avoid — nested or imperative
+# avoid - nested or imperative
 Anu.Message.buttons(Anu.Message.text(Anu.Message.new(to), "hello"), [{"OK", :ok}])
 ```
 
@@ -117,13 +117,13 @@ Open an issue describing the use case before writing code. This helps avoid wast
 2. Write your code and add tests
 3. Make sure all checks pass (`mix format`, `mix credo`, `mix dialyzer`, `mix test`)
 4. Write a clear PR description explaining what and why
-5. Keep PRs focused — one feature or fix per PR
+5. Keep PRs focused - one feature or fix per PR
 
 ### Writing tests
 
 - Unit tests go in `test/anu/` mirroring the `lib/anu/` structure
 - Use the `Anu.Adapters.Test` adapter in tests, never hit real APIs
-- Test the pipe composition — assert that functions return the correct struct
+- Test the pipe composition - assert that functions return the correct struct
 - For webhook tests, use the fixtures in `test/support/fixtures.ex`
 
 ### Documentation
@@ -138,15 +138,15 @@ We use `mix format` with the default config. Beyond that:
 
 - Prefer pattern matching over conditionals when possible
 - Use `with` for happy-path chains with multiple potential failures
-- Keep functions short — if it needs a comment explaining a section, extract a function
-- Name variables descriptively — `message` not `m`, `phone_number` not `pn`
+- Keep functions short - if it needs a comment explaining a section, extract a function
+- Name variables descriptively - `message` not `m`, `phone_number` not `pn`
 
 ## Community
 
 - Be kind and respectful
 - Assume good intent
-- Help others learn — not everyone has the same background
-- All contributions matter — docs, tests, bug reports, and code are equally valued
+- Help others learn - not everyone has the same background
+- All contributions matter - docs, tests, bug reports, and code are equally valued
 
 ## License
 

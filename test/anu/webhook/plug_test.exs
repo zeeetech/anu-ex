@@ -21,7 +21,7 @@ defmodule Anu.Webhook.PlugTest do
     {:ok, opts: opts}
   end
 
-  describe "GET — verification challenge" do
+  describe "GET - verification challenge" do
     test "returns the challenge when verify_token matches", %{opts: opts} do
       conn =
         :get
@@ -65,7 +65,7 @@ defmodule Anu.Webhook.PlugTest do
     end
   end
 
-  describe "POST — webhook events" do
+  describe "POST - webhook events" do
     test "dispatches parsed events to handler", %{opts: opts} do
       body = JSON.encode!(Anu.Fixtures.text_message_payload())
       signature = sign(body)

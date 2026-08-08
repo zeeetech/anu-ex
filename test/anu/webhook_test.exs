@@ -23,7 +23,7 @@ defmodule Anu.WebhookTest do
     end
   end
 
-  describe "Parser.parse/1 — text messages" do
+  describe "Parser.parse/1 - text messages" do
     test "parses a text message" do
       [{:message_received, event}] = Parser.parse(Fixtures.text_message_payload())
 
@@ -48,7 +48,7 @@ defmodule Anu.WebhookTest do
     end
   end
 
-  describe "Parser.parse/1 — status updates" do
+  describe "Parser.parse/1 - status updates" do
     test "parses a delivered status" do
       [{:message_status, event}] = Parser.parse(Fixtures.status_update_payload("delivered"))
 
@@ -77,7 +77,7 @@ defmodule Anu.WebhookTest do
     end
   end
 
-  describe "Parser.parse/1 — interactive messages" do
+  describe "Parser.parse/1 - interactive messages" do
     test "parses a button reply" do
       [{:message_received, event}] = Parser.parse(Fixtures.button_reply_payload())
 
@@ -86,7 +86,7 @@ defmodule Anu.WebhookTest do
     end
   end
 
-  describe "Parser.parse/1 — media messages" do
+  describe "Parser.parse/1 - media messages" do
     test "parses an image message" do
       [{:message_received, event}] = Parser.parse(Fixtures.image_message_payload())
 
@@ -96,7 +96,7 @@ defmodule Anu.WebhookTest do
     end
   end
 
-  describe "Parser.parse/1 — edge cases" do
+  describe "Parser.parse/1 - edge cases" do
     test "returns empty list for empty payload" do
       assert [] = Parser.parse(%{})
     end

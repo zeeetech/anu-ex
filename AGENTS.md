@@ -8,16 +8,16 @@ Anu is an open core platform for building on WhatsApp. It provides composable me
 
 The platform has three layers:
 
-- **SDKs** (open source, MIT) — client libraries for multiple languages. This repo is the Elixir SDK, which is the reference implementation. TypeScript, Python, and Go SDKs will follow.
-- **REST API** — language-agnostic HTTP API for messaging, AI, and workflows. The SDKs are thin wrappers around this API for the OSS features, and the cloud features are only accessible via the API.
-- **Cloud** (proprietary, hosted) — AI primitives and workflow engine, powered by Anthropic Claude.
+- **SDKs** (open source, MIT) - client libraries for multiple languages. This repo is the Elixir SDK, which is the reference implementation. TypeScript, Python, and Go SDKs will follow.
+- **REST API** - language-agnostic HTTP API for messaging, AI, and workflows. The SDKs are thin wrappers around this API for the OSS features, and the cloud features are only accessible via the API.
+- **Cloud** (proprietary, hosted) - AI primitives and workflow engine, powered by Anthropic Claude.
 
 ## Tech stack (Elixir SDK)
 
 - **Language**: Elixir 1.19+, OTP 27+
 - **HTTP client**: Finch (direct, no high-level wrappers)
 - **JSON**: Elixir 1.19 native `JSON` module (no Jason, no Poison)
-- **Web**: Plug (for webhooks — framework-agnostic, works with Phoenix, Bandit, etc.)
+- **Web**: Plug (for webhooks - framework-agnostic, works with Phoenix, Bandit, etc.)
 - **Testing**: ExUnit, Mox for adapter mocks
 - **Code quality**: Credo (strict), Dialyzer, `mix format`
 
@@ -53,16 +53,16 @@ External I/O is abstracted behind behaviours:
 
 ```
 Anu.Adapter (behaviour)
-├── Anu.Adapters.Meta   — production, hits Meta Cloud API via Finch
-├── Anu.Adapters.Local  — dev, logs to console
-└── Anu.Adapters.Test   — test, stores in process mailbox
+├── Anu.Adapters.Meta   - production, hits Meta Cloud API via Finch
+├── Anu.Adapters.Local  - dev, logs to console
+└── Anu.Adapters.Test   - test, stores in process mailbox
 ```
 
 The adapter is resolved at runtime via config, not compile time. This allows per-test adapter overrides.
 
 ### Message struct
 
-`Anu.Message` is a plain struct, not an Ecto schema. It accumulates state as the developer pipes through builder functions. The struct is only serialized to the Meta API format when `Anu.deliver/1` is called. This means validation happens at delivery time, not at build time — keeping the composing API lenient and the delivery strict.
+`Anu.Message` is a plain struct, not an Ecto schema. It accumulates state as the developer pipes through builder functions. The struct is only serialized to the Meta API format when `Anu.deliver/1` is called. This means validation happens at delivery time, not at build time - keeping the composing API lenient and the delivery strict.
 
 ### Webhook handling
 
@@ -84,20 +84,20 @@ Functions that can fail return `{:ok, result} | {:error, reason}` tuples. `Anu.d
 ### Patterns to follow
 
 ```elixir
-# Builder functions — always return the struct
+# Builder functions - always return the struct
 @spec text(t(), String.t()) :: t()
 def text(%Message{} = message, body) when is_binary(body) do
   %{message | body: body}
 end
 
-# Delivery — returns ok/error tuple
+# Delivery - returns ok/error tuple
 @spec deliver(Message.t()) :: {:ok, Response.t()} | {:error, Error.t()}
 def deliver(%Message{} = message) do
   adapter = Config.adapter()
   adapter.deliver(message, Config.finch_name())
 end
 
-# HTTP calls — always go through Finch, always use Config
+# HTTP calls - always go through Finch, always use Config
 @spec send_request(map()) :: {:ok, Finch.Response.t()} | {:error, term()}
 defp send_request(payload) do
   url = "https://graph.facebook.com/v21.0/#{Config.phone_number_id()}/messages"
@@ -109,14 +109,14 @@ end
 
 ### Patterns to avoid
 
-- Don't use `Application.get_env/3` directly — use `Anu.Config` module
+- Don't use `Application.get_env/3` directly - use `Anu.Config` module
 - Don't use macros for public API functions
-- Don't add deps without discussing first — we keep the dependency tree minimal
-- Don't use Jason, Poison, or any JSON lib — use native `JSON` module
-- Don't use Req, HTTPoison, or Tesla — use `Finch` directly
-- Don't put business logic in the Plug — the Plug only parses and dispatches
+- Don't add deps without discussing first - we keep the dependency tree minimal
+- Don't use Jason, Poison, or any JSON lib - use native `JSON` module
+- Don't use Req, HTTPoison, or Tesla - use `Finch` directly
+- Don't put business logic in the Plug - the Plug only parses and dispatches
 - Don't use atoms for user-provided strings (atom table exhaustion risk)
-- Don't hardcode the Finch instance name — always go through `Config.finch_name()`
+- Don't hardcode the Finch instance name - always go through `Config.finch_name()`
 
 ## Testing
 
@@ -179,12 +179,12 @@ lib/
 
 ## Key dependencies
 
-- `finch` — HTTP client with connection pooling
-- `plug` — webhook handling (framework-agnostic)
-- `mox` — test mocks for adapters (dev/test only)
-- `ex_doc` — documentation (dev only)
-- `credo` — linting (dev only)
-- `dialyxir` — type checking (dev only)
+- `finch` - HTTP client with connection pooling
+- `plug` - webhook handling (framework-agnostic)
+- `mox` - test mocks for adapters (dev/test only)
+- `ex_doc` - documentation (dev only)
+- `credo` - linting (dev only)
+- `dialyxir` - type checking (dev only)
 
 Note: JSON encoding uses Elixir 1.19's native `JSON` module. No JSON library dependency.
 

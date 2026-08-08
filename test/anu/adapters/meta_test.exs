@@ -7,7 +7,7 @@ defmodule Anu.Adapters.MetaTest do
   alias Anu.Section
   alias Anu.Template
 
-  describe "serialize/1 — text messages" do
+  describe "serialize/1 - text messages" do
     test "serializes a plain text message" do
       payload =
         "+5511999999999"
@@ -35,7 +35,7 @@ defmodule Anu.Adapters.MetaTest do
     end
   end
 
-  describe "serialize/1 — interactive button messages" do
+  describe "serialize/1 - interactive button messages" do
     test "serializes buttons" do
       payload =
         "+55"
@@ -82,7 +82,7 @@ defmodule Anu.Adapters.MetaTest do
     end
   end
 
-  describe "serialize/1 — list messages" do
+  describe "serialize/1 - list messages" do
     test "serializes sections and rows" do
       payload =
         "+55"
@@ -111,7 +111,7 @@ defmodule Anu.Adapters.MetaTest do
     end
   end
 
-  describe "serialize/1 — media messages" do
+  describe "serialize/1 - media messages" do
     test "serializes an image" do
       payload =
         "+55"
@@ -157,7 +157,7 @@ defmodule Anu.Adapters.MetaTest do
     end
   end
 
-  describe "serialize/1 — location messages" do
+  describe "serialize/1 - location messages" do
     test "serializes location" do
       payload =
         "+55"
@@ -172,7 +172,7 @@ defmodule Anu.Adapters.MetaTest do
     end
   end
 
-  describe "serialize/1 — reaction messages" do
+  describe "serialize/1 - reaction messages" do
     test "serializes a reaction" do
       payload =
         "+55"
@@ -185,7 +185,7 @@ defmodule Anu.Adapters.MetaTest do
     end
   end
 
-  describe "serialize/1 — template messages" do
+  describe "serialize/1 - template messages" do
     test "serializes a simple template" do
       payload =
         "+55"

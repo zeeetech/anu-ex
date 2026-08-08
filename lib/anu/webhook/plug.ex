@@ -4,11 +4,11 @@ defmodule Anu.Webhook.Plug do
 
   This Plug handles two types of requests:
 
-    * **GET** — Meta's webhook verification challenge. Compares the
+    * **GET** - Meta's webhook verification challenge. Compares the
       `hub.verify_token` query parameter against the configured verify token
       and returns the `hub.challenge` value.
 
-    * **POST** — Incoming webhook events. Verifies the `x-hub-signature-256`
+    * **POST** - Incoming webhook events. Verifies the `x-hub-signature-256`
       header, parses the payload, and dispatches events to the configured handler.
 
   ## Usage
@@ -23,9 +23,9 @@ defmodule Anu.Webhook.Plug do
 
   ## Options
 
-    * `:handler` (required) — a module implementing `Anu.Webhook.Handler`
-    * `:secret` — app secret for signature verification; falls back to `Anu.Config.app_secret/0`
-    * `:verify_token` — token for the GET verification challenge; falls back to `Anu.Config.verify_token/0`
+    * `:handler` (required) - a module implementing `Anu.Webhook.Handler`
+    * `:secret` - app secret for signature verification; falls back to `Anu.Config.app_secret/0`
+    * `:verify_token` - token for the GET verification challenge; falls back to `Anu.Config.verify_token/0`
 
   Multi-app setups (several WABAs in one node) can mount one `forward` per
   app, each with its own `:secret` and `:verify_token`.
