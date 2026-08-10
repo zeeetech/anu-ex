@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.1](https://github.com/zeeetech/anu-ex/compare/v0.2.0...v0.2.1) (2026-08-10)
+
+
+### Bug Fixes
+
+* **cloud:** preserve error code from response body ([7e36501](https://github.com/zeeetech/anu-ex/commit/7e365013cf3c3dd5a6cd90d1fe365a1263de908d))
+
+
+### Miscellaneous Chores
+
+* remove contributing ([057777b](https://github.com/zeeetech/anu-ex/commit/057777b7f692e247af3adf88385d6849b93b6ad1))
+
 ## [0.2.0](https://github.com/zeeetech/anu-ex/compare/v0.1.0...v0.2.0) (2026-08-08)
 
 
