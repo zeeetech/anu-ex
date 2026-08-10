@@ -62,9 +62,9 @@ defmodule Anu.Cloud.Client do
   end
 
   defp handle_response({:ok, %Finch.Response{status: status, body: body}}) do
-    decoded = decode_safely(body)
-    error = decoded |> Error.from_response() |> Map.put(:code, status)
-    {:error, error}
+    error = body |> decode_safely() |> Error.from_response()
+
+    {:error, %{error | code: error.code || status}}
   end
 
   defp handle_response({:error, reason}) do

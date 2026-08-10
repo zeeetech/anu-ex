@@ -4,7 +4,8 @@ defmodule Anu.Error do
 
   ## Fields
 
-    * `:code` - error code from Meta API (integer) or an internal atom
+    * `:code` - error code from Meta API (integer), an anu_cloud code
+      (string, e.g. `"quota_exceeded"`), or an internal atom
     * `:message` - human-readable error message
     * `:details` - additional error details (map or nil)
     * `:raw` - the raw response body, if available
@@ -17,7 +18,7 @@ defmodule Anu.Error do
   """
 
   @type t :: %__MODULE__{
-          code: integer() | atom(),
+          code: integer() | String.t() | atom(),
           message: String.t(),
           details: map() | nil,
           raw: map() | nil
